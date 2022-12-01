@@ -1,0 +1,24 @@
+---
+title: "Paper"
+author: "Isabelle Munsell"
+date: '2022-12-01'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+Motivation:
+
+Methodology:
+
+Results:
+
+Results:
+
+Conclusion:
+
+References:
