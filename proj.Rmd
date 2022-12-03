@@ -1,0 +1,184 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+
+#(dyplr)
+set.seed(400)
+
+```
+
+
+
+
+```{r}
+
+init_df <-function(STARTING_POPULATION = 100, GRIDX = 100, GRIDY = 100){
+  
+  x_coord = rep(NA, STARTING_POPULATION)
+  y_coord = rep(NA, STARTING_POPULATION)
+  infected = rep(NA, STARTING_POPULATION) # bool value 1 = infected 0 = not infected
+  
+  dead = rep(NA, STARTING_POPULATION)
+  
+  for (i in 1:STARTING_POPULATION){
+      x_coord[i] = runif(1,0,GRIDX)
+      y_coord[i] = runif(1,0,GRIDY)
+      infected[i] = 0
+      dead[i] = 0
+  }
+  # choose 1 person to be infected, as specified by the paper.
+  # locate that person at the center of the grid
+  x_coord[i] = GRID/2
+  y_coord[i] = GRID/2
+  infected[i] = 1
+  
+  df = as.data.frame(x_coord)
+  df$y_coord = y_coord
+  df$infected = infected
+  df$dead = dead
+
+  return(df)
+}
+
+```
+
+
+```{r}
+
+update_location <- function(df, population = 100){
+
+  for (person in 1:population){
+    if (df$dead[person] == 0){ # if they are alive and can still move
+      df$x_coord[person] = check_bounds(rnorm(1, mean = df$x_coord[person], sd = 50))
+      df$y_coord[person] = check_bounds(rnorm(1, mean = df$y_coord[person], sd = 50))
+    }
+  }
+  
+  return(df)
+  
+}
+
+
+
+```
+
+```{r}
+
+find_close <- function(x1,y1,x2,y2){
+  # euclidean distance formula
+  sqrt( (x1-x2)^2 + ( y1-y2)^2)
+}
+
+# if a person walks outside of bounds, then they need to be reflected back
+check_bounds <- function(x, GRID = 100){
+  while(x >= GRID || x <= 0){
+  if (x >= GRID){
+    x = x - GRID
+  }
+  
+  if (x <= 0){
+    x = abs(x)
+  }
+
+    
+    
+  }
+  return(x)
+
+}
+
+
+```
+
+
+```{r}
+
+check_infected <- function(df){
+  for (person in 1:length(df$dead)){
+    if (df$infected[person] == 1){
+      for (j in 1:length(df$dead)){
+        if (j != person){
+          dist = find_close(df$x_coord[person], df$y_coord[person], df$x_coord[j], df$y_coord[j])
+          if(dist <= 2){
+            if (df$infected[j] != 1){
+              df$infected[j] = 2 # this is 2 so that a person cannot get infected and infect others in the same 'tick'.
+            }
+            
+          }
+        }
+      }
+    }
+    
+  }
+  df$infected[df$infected == 2] = 1
+  
+  return(df)
+  
+  
+}
+
+
+
+```
+
+
+
+
+
+DataFrame to keep track of coordinates of each agent
+
+for each agent
+
+move a little
+
+if an infected agent is close to another agent
+
+see if they get infected.
+
+
+```{r}
+set.seed(400)
+STARTING_POPULATION = 1000
+SIMULATION_ITERATIONS = 10
+GRID = 100
+df = init_df(STARTING_POPULATION)
+
+for (sim_loop in 1:SIMULATION_ITERATIONS){
+  df = update_location(df, STARTING_POPULATION)
+  df = check_infected(df)
+  
+}
+library(ggplot2)
+
+length(df$infected)
+ggplot(df,aes(x=x_coord,y=y_coord,group=infected))+
+   geom_point(aes(color=infected))
+```
+
+
+
+psudeo-code
+
+
+
+init vars
+
+
+start sim loop{
+
+- update people's location
+- check to see if infected people are close to non-infected people
+- if yes, run probability to see if they are infected
+- if no, carry on
+
+}
+
+
+
+
+
+
+
