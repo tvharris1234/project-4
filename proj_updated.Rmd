@@ -1,0 +1,270 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+
+
+set.seed(400)
+library(ggplot2)
+
+```
+
+
+
+
+```{r}
+
+init_df <-function(STARTING_POPULATION = 100, GRID){
+  
+  x_coord = rep(NA, STARTING_POPULATION)
+  y_coord = rep(NA, STARTING_POPULATION)
+  infected = rep(NA, STARTING_POPULATION) # bool value 1 = infected 0 = not infected
+  time_infected = rep(0, STARTING_POPULATION)
+  dead = rep(NA, STARTING_POPULATION)
+  
+  for (i in 1:STARTING_POPULATION){
+      x_coord[i] = runif(1,0,GRID)
+      y_coord[i] = runif(1,0,GRID)
+      infected[i] = 0
+      dead[i] = 0
+  }
+  # choose 1 person to be infected, as specified by the paper.
+  # locate that person at the center of the grid
+  x_coord[i] = GRID/2
+  y_coord[i] = GRID/2
+  infected[i] = 1
+  
+  df = as.data.frame(x_coord)
+  df$y_coord = y_coord
+  df$infected = infected
+  df$dead = dead
+  df$time_infected = time_infected
+  
+  
+  df$time_infected[i] = 1
+  
+
+
+  return(df)
+}
+
+```
+
+
+```{r}
+
+update_location <- function(df, population = 100, GRID){
+
+  for (person in 1:population){
+    if (df$dead[person] == 0){ # if they are alive and can still move
+      df$x_coord[person] = check_bounds(rnorm(1, mean = df$x_coord[person], sd = 0.25), GRID)
+      df$y_coord[person] = check_bounds(rnorm(1, mean = df$y_coord[person], sd = 0.25), GRID)
+    }
+  }
+  
+  return(df)
+  
+}
+
+
+
+```
+```{r}
+
+rnorm(1, mean = 3, sd = 1)
+
+
+```
+
+```{r}
+
+find_close <- function(x1,y1,x2,y2){
+  # euclidean distance formula
+  sqrt( (x1-x2)^2 + ( y1-y2)^2)
+}
+
+# if a person walks outside of bounds, then they need to be reflected back
+check_bounds <- function(x, GRID){
+  while(x >= GRID || x <= 0){
+  if (x >= GRID){
+    x = x - GRID
+  }
+  
+  if (x <= 0){
+    x = abs(x)
+  }
+    
+  }
+  return(x)
+
+}
+
+
+```
+
+
+```{r}
+
+check_infected <- function(df, infection_length = 3, prob_infected = 1){
+
+  for (person in 1:length(df$dead)){
+    if (df$infected[person] == 1){
+      for (j in 1:length(df$dead)){
+        if (j != person){
+          dist = find_close(df$x_coord[person], df$y_coord[person], df$x_coord[j], df$y_coord[j])
+          if(dist <= .3){
+            if (df$infected[j] != 1){
+              df$infected[j] = infection(prob_infected) # this is 2 so that a person cannot get infected and infect others in the same 'tick'. (or 0 if they don't get infected)
+            }
+            
+          }
+        }
+      }
+    }
+    
+  }
+  df$infected[df$infected == 2] = 1
+  df = update_time_infected(df, infection_length)
+  
+  return(df)
+  
+  
+}
+
+
+
+```
+
+```{r}
+
+update_time_infected <- function(df, infection_length, use = FALSE){
+  
+  if (use == FALSE){
+    return(df)
+  }
+  
+  for (i in 1:length(df$x_coord)){
+    if (df$infected[i] == 1 && df$time_infected[i] == infection_length){
+      df$infected[i] = 0
+      df$time_infected[i] = 0
+    }
+    if (df$infected[i] == 1){
+      df$time_infected[i] = df$time_infected[i] + 1
+    }
+    
+  }
+  
+  return(df)
+  
+  
+}
+
+
+
+infection <- function(prob_infected){
+  
+  if(rbinom(1,1,prob_infected) == 1){
+    return(2)
+  }
+  return(0)
+  
+  
+}
+
+```
+
+
+
+
+
+
+DataFrame to keep track of coordinates of each agent
+
+for each agent
+
+move a little
+
+if an infected agent is close to another agent
+
+see if they get infected.
+
+
+```{r}
+
+
+
+
+print(num_infections)
+```
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+set.seed(400)
+STARTING_POPULATION = 1000
+SIMULATION_ITERATIONS = 25
+GRID = 25
+
+
+run <- function(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 3, GRID = 100){
+  df = init_df(STARTING_POPULATION, GRID)
+  num_infections = rep(NA, SIMULATION_ITERATIONS)
+  
+  for (sim_loop in 1:SIMULATION_ITERATIONS){
+    print(sim_loop)
+    df = update_location(df, STARTING_POPULATION, GRID)
+    df = check_infected(df)
+    num_infections[sim_loop] = sum(df$infected)
+  }
+  
+  length(df$infected)
+  ggplot(df,aes(x=x_coord,y=y_coord,group=infected))+
+     geom_point(aes(color=as.factor(infected)))+
+  labs(title = "Random Walk of COVID-19 infection spread (25 steps)", x = "X Coordinate", y = "Y Coordinate", color = "Infected")
+  
+  
+  return(num_infections)
+  }
+
+num_infections = run(STARTING_POPULATION, SIMULATION_ITERATIONS, GRID)
+
+
+
+
+  ggplot(df,aes(x=length(dnum_infections),y=num_infections))+
+     geom_point(aes(color=as.factor(infected)))+
+  labs(title = "Number of Infections", x = "Day", y = "Number of People")
+
+
+```
+
+psudeo-code
+
+
+
+init vars
+
+
+start sim loop{
+
+- update people's location
+- check to see if infected people are close to non-infected people
+- if yes, run probability to see if they are infected
+- if no, carry on
+
+}
+
+https://www.sciencedirect.com/science/article/pii/S0378437121002867?casa_token=H8r8Dysw8zUAAAAA:dHa2SRBsz3cw8f4T_BaN2H-G_FdznUixYk_pNU6Yo9_C103OfU2Sz2MmiFlLHklynaCZb7Mq5Q
+
+
+
+
+
