@@ -5,7 +5,8 @@ date: '2022-12-06'
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE,fig.width=12, fig.height=8)
+
 ```
 
 
@@ -23,7 +24,7 @@ library(ggplot2)
 
 ```{r}
 
-init_df <-function(STARTING_POPULATION = 100, GRID){
+init_df <-function(STARTING_POPULATION, GRID){
   
   x_coord = rep(NA, STARTING_POPULATION)
   y_coord = rep(NA, STARTING_POPULATION)
@@ -48,6 +49,7 @@ init_df <-function(STARTING_POPULATION = 100, GRID){
   df$infected = infected
   df$dead = dead
   df$time_infected = time_infected
+  df$time_not_infected = rep(0, STARTING_POPULATION)
   
   
   df$time_infected[i] = 1
@@ -62,19 +64,18 @@ init_df <-function(STARTING_POPULATION = 100, GRID){
 
 ```{r}
 
-update_location <- function(df, population = 100, GRID){
+update_location <- function(df,population, GRID){
 
   for (person in 1:population){
     if (df$dead[person] == 0){ # if they are alive and can still move
-      df$x_coord[person] = check_bounds(rnorm(1, mean = df$x_coord[person], sd = 0.25), GRID)
-      df$y_coord[person] = check_bounds(rnorm(1, mean = df$y_coord[person], sd = 0.25), GRID)
+      df$x_coord[person] = check_bounds(rnorm(1, mean = df$x_coord[person], sd = 0.005), GRID)
+      df$y_coord[person] = check_bounds(rnorm(1, mean = df$y_coord[person], sd = 0.005), GRID)
     }
   }
   
   return(df)
   
 }
-
 
 
 ```
@@ -116,8 +117,8 @@ check_infected <- function(df, infection_length = 3, prob_infected = 1, use = FA
       for (j in 1:length(df$dead)){
         if (j != person){
           dist = find_close(df$x_coord[person], df$y_coord[person], df$x_coord[j], df$y_coord[j])
-          if(dist <= .3){
-            if (df$infected[j] != 1){
+          if(dist <= .024){
+            if (df$infected[j] != 1 && df$time_not_infected[j] >= 0){
               df$infected[j] = infection(prob_infected) # this is 2 so that a person cannot get infected and infect others in the same 'tick'. (or 0 if they don't get infected)
             }
             
@@ -127,6 +128,7 @@ check_infected <- function(df, infection_length = 3, prob_infected = 1, use = FA
     }
     
   }
+  
   df$infected[df$infected == 2] = 1
   df = update_time_infected(df, infection_length, use)
   
@@ -150,7 +152,7 @@ update_time_infected <- function(df, infection_length, use){
   for (i in 1:length(df$x_coord)){
     if (df$infected[i] == 1 && df$time_infected[i] == infection_length){
       df$infected[i] = 0
-      df$time_infected[i] = 0
+      df$time_not_infected[i] = -60
     }
     if (df$infected[i] == 1){
       df$time_infected[i] = df$time_infected[i] + 1
@@ -179,9 +181,9 @@ infection <- function(prob_infected){
 ```{r, fig.align = "center",out.width = "10%"}
 
 set.seed(400)
-STARTING_POPULATION = 1000
+STARTING_POPULATION = 50
 SIMULATION_ITERATIONS = 25
-GRID = 25
+GRID = 0.8
 
 
 run <- function(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 25, GRID = 100, use = TRUE, p){ # Use is to have people recover from infections or not, p = plot infections over time or plot final infected people
@@ -221,14 +223,20 @@ run <- function(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 25, GRID = 1
       labs(title = tit, x = "Days", y = "Number Infections", color = "Infected")
     
   }
+
+  
   print(a)
+
   
   return(num_infections)
 
 }
 
 
+
 ```
+
+
 
 
 
@@ -294,8 +302,8 @@ run <- function(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 25, GRID = 1
 - We can use this movement to graph interactions between people
 
 
-```{r echo=FALSE, out.width = "30%", fig.align = "right"}
-knitr::include_graphics("gif.gif")
+```{r, echo=FALSE, width = "50%"}
+knitr::include_graphics("gif.gif", dpi = NULL)
 ```
 
 
@@ -306,6 +314,7 @@ knitr::include_graphics("gif.gif")
 - Used a random walk for each person
 
 - If a healthy person is within 2 meters of an infected person, they got infected
+
 
 
 ## Their Model Results
@@ -333,7 +342,24 @@ knitr::include_graphics("their_model.jpg")
 
 - Were not able to use as many people because of computational limitations
 
+```{r, echo = FALSE}
 
+
+run(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 25, GRID, use = FALSE, p = FALSE)
+```
+
+```{r}
+#run(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 50, GRID, use = FALSE, p = FALSE)
+
+
+```
+
+
+```{r}
+#run(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 100, GRID, use = FALSE, p = FALSE)
+
+
+```
 
 ## COVID-19 Infections with Recovery
 
@@ -348,9 +374,9 @@ knitr::include_graphics("their_model.jpg")
 plot_both <- function(tempdf){
   tit = paste("Random Walk of COVID-19 infection spread (", length(recover),  " days)")
   a = ggplot(tempdf)+
-    geom_line(aes(x=1:length(recover),y = recover, color = "Without Recovery"))+
+    geom_line(aes(x=1:length(recover),y = recover, color = "With Recovery"))+
     geom_point(aes(x=1:length(recover),y = recover), color = "blue")+
-    geom_line(aes(x = 1:length(recover), y = no_recover,color = "With Recovery"))+
+    geom_line(aes(x = 1:length(recover), y = no_recover,color = "Without Recovery"))+
     geom_point(aes(x = 1:length(recover), y = no_recover), color = "red")+
     labs(title = tit, x = "Days", y = "Number Infections", color = c("recover", "not recover"))
 
@@ -360,11 +386,11 @@ plot_both <- function(tempdf){
 
 ## Our Model
 
-```{r,fig.keep = 'last', fig.align = "left",out.width = "10%"}
+```{r,fig.keep = 'last'}
 set.seed(400)
-no_recover = run(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 25, GRID = 25, use = FALSE, p = TRUE)
+no_recover = run(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 25, GRID, use = FALSE, p = TRUE)
 set.seed(400)
-recover = run(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 25, GRID = 25, use = TRUE, p = TRUE)
+recover = run(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 25, GRID, use = TRUE, p = TRUE)
 tempdf = as.data.frame(no_recover)
 tempdf$recover = recover
 
@@ -373,36 +399,42 @@ plot_both(tempdf)
 
 
 
-```{r, fig.keep = "last", fig.align = "center",out.width = "10%"}
+```{r,fig.keep = 'last'}
+
+GRID = 0.8
 set.seed(400)
-no_recover = run(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 50, GRID = 25, use = FALSE, p = TRUE)
+no_recover = run(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 50, GRID, use = FALSE, p = TRUE)
 set.seed(400)
-recover = run(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 50, GRID = 25, use = TRUE, p = TRUE)
+recover = run(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 50, GRID, use = TRUE, p = TRUE)
 tempdf = as.data.frame(no_recover)
 tempdf$recover = recover
 plot_both(tempdf)
 
 ```
 
-```{r, fig.align = "right", out.width = "10%"} 
+```{r,fig.keep = 'last'}
 
-set.seed(400)
-no_recover = run(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 100, GRID = 25, use = FALSE, p = TRUE)
-set.seed(400)
-recover = run(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 100, GRID = 25, use = TRUE, p = TRUE)
-tempdf = as.data.frame(no_recover)
-tempdf$recover = recover
+ set.seed(400)
+ no_recover = run(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 100, GRID, use = FALSE, p = TRUE)
+ set.seed(400)
+ recover = run(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 100, GRID, use = TRUE, p = TRUE)
+ tempdf = as.data.frame(no_recover)
+ tempdf$recover = recover
+ plot_both(tempdf)
 
 ```
 
 
+```{r,fig.keep = 'last'} 
+
+ set.seed(400)
+ no_recover = run(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 500, GRID, use = FALSE, p = TRUE)
+ set.seed(400)
+ recover = run(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 500, GRID, use = TRUE, p = TRUE)
+ tempdf = as.data.frame(no_recover)
+ tempdf$recover = recover
+ plot_both(tempdf)
+ 
 
 
-
-
-
-
-
-
-
-
+```
