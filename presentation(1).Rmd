@@ -536,6 +536,7 @@ run_co <- function(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 1000, GRI
  codf = as.data.frame(no_recover)
  codf$recover = recover
  plot_both(codf)
+ 
 ```
 
 
