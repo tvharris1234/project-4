@@ -393,6 +393,18 @@ plot_both(tempdf)
 knitr::include_graphics("New York Covid.PNG")
 ```
 
+
+## Colorado Real Life Cases
+
+- Using data from Colorado to use parameters like transmission rate and recovery rate. 
+
+- Took an average for transmission rate based on 25 simulations in data.
+
+- Found the transmission rate to be 0.47
+
+- A person recovers every 8 days
+
+
 ```{r}
 set.seed(400) 
 #colorado stuff
@@ -502,16 +514,36 @@ run_co <- function(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 1000, GRI
 
 }
 
+```
 
 
- no_recover = run_co(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 75, GRID = 0.8, use = FALSE, p = TRUE)
+## Colorado Real Cases
+
+- Use Monte Carlo to compute 200 iterations of the simulation. 
+
+- With a starting population of 1000, we can see the spread of Covid-19.
+
+- Without a recovery rate we see that all of the people become infected around day 125.
+
+- With a recovery rate we see that the spread would eventually stop around day 180.
+
+
+```{r}
+
+ no_recover = run_co(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 200, GRID = 0.8, use = FALSE, p = TRUE)
  set.seed(400)
- recover = run_co(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 75, GRID = 0.8, use = TRUE, p = TRUE)
+ recover = run_co(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 200, GRID = 0.8, use = TRUE, p = TRUE)
  codf = as.data.frame(no_recover)
  codf$recover = recover
  plot_both(codf)
 ```
 
 
+## Colorado Data
 
+- There are limitations to the Colorado data considering that we did not implement a vaccination.
+
+- This data was also taken from when Covid-19 was not considered an epidemic anymore.
+
+- Still useful to predict how safety measures could impact the spread of the virus.
 
