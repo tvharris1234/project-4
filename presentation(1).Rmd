@@ -572,7 +572,4 @@ plot_both_2 <- function(tempdf){
 - Our models could be improved further by varying probabilities by age or using social distancing measures, but adding in a recovery rate improves the original study.
 
 
-## Works Cited
-
-- Buchwald, A. G., Bayham, J., Adams, J., Bortz, D., Colborn, K., Zarella, O....Carlton, E. J. (2021). Estimating the Impact of Statewide Policies to Reduce Spread of Severe Acute Respiratory Syndrome Coronavirus 2 in Real Time, Colorado, USA. Emerging Infectious Diseases, 27(9), 2312-2322. https://doi.org/10.3201/eid2709.204167.
 
