@@ -514,28 +514,40 @@ run_co <- function(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 1000, GRI
 
 }
 
+
+plot_both_2 <- function(tempdf){
+  tit = paste("Random Walk of COVID-19 infection spread (", length(recover),  " days)")
+  a = ggplot(tempdf)+
+    geom_line(aes(x=1:length(recover),y = recover, color = "Without Recovery"))+
+    geom_point(aes(x=1:length(recover),y = recover), color = "red")+
+    geom_line(aes(x = 1:length(recover), y = no_recover,color = "With Recovery"))+
+    geom_point(aes(x = 1:length(recover), y = no_recover), color = "blue")+
+    labs(title = tit, x = "Days", y = "Number Infections", color = c("recover", "not recover"))
+
+  return(a)
+}
 ```
 
 
 ## Colorado Real Cases
 
-- Use Monte Carlo to compute 200 iterations of the simulation. 
+- Use Monte Carlo to compute 180 iterations of the simulation. 
 
 - With a starting population of 1000, we can see the spread of Covid-19.
 
 - Without a recovery rate we see that all of the people become infected around day 125.
 
-- With a recovery rate we see that the spread would eventually stop around day 180.
+- With a recovery rate we see that the spread would eventually stop around day 150.
 
 
-```{r}
+```{r,fig.keep = 'last'}
 
- no_recover = run_co(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 200, GRID = 0.8, use = FALSE, p = TRUE)
+ no_recover = run_co(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 180, GRID = 0.8, use = FALSE, p = TRUE)
  set.seed(400)
- recover = run_co(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 200, GRID = 0.8, use = TRUE, p = TRUE)
+ recover = run_co(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 180, GRID = 0.8, use = TRUE, p = TRUE)
  codf = as.data.frame(no_recover)
  codf$recover = recover
- plot_both(codf)
+ plot_both_2(codf)
  
 ```
 
@@ -547,4 +559,20 @@ run_co <- function(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 1000, GRI
 - This data was also taken from when Covid-19 was not considered an epidemic anymore.
 
 - Still useful to predict how safety measures could impact the spread of the virus.
+
+- Also helpful when determining the length of infections for the virus.
+
+
+## Conclusions
+
+- We were able to replicate the study for a random walk with monte carlo simulations and implement a recovery rate.
+
+- From there we used MC simulations to estimate the spread of Covid-19 for other places like New York City and Colorado.
+
+- Our models could be improved further by varying probabilities by age or using social distancing measures, but adding in a recovery rate improves the original study.
+
+
+## Works Cited
+
+- Buchwald, A. G., Bayham, J., Adams, J., Bortz, D., Colborn, K., Zarella, O....Carlton, E. J. (2021). Estimating the Impact of Statewide Policies to Reduce Spread of Severe Acute Respiratory Syndrome Coronavirus 2 in Real Time, Colorado, USA. Emerging Infectious Diseases, 27(9), 2312-2322. https://doi.org/10.3201/eid2709.204167.
 
