@@ -339,7 +339,7 @@ run(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 50, GRID, use = FALSE, p
 
 - Original Paper did not have any recoveries
 
-- We assumed each person would recover after 13 days
+- We assumed each person would recover after 11 days
 
 
 ```{r,fig.keep = 'last', echo = FALSE, results='hide'}
