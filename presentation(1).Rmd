@@ -393,7 +393,124 @@ plot_both(tempdf)
 knitr::include_graphics("New York Covid.PNG")
 ```
 
+```{r}
+set.seed(400) 
+#colorado stuff
+check_infected_co <- function(df, infection_length = 8, prob_infected = 0.47, use = FALSE){
 
+  for (person in 1:length(df$dead)){
+    if (df$infected[person] == 1){
+      for (j in 1:length(df$dead)){
+        if (j != person){
+          dist = find_close(df$x_coord[person], df$y_coord[person], df$x_coord[j], df$y_coord[j])
+          if(dist <= .024){
+            if (df$infected[j] != 1 && df$time_not_infected[j] >= 0){
+              df$infected[j] = infection(prob_infected) # this is 2 so that a person cannot get infected and infect others in the same 'tick'. (or 0 if they don't get infected)
+            }
+            
+          }
+        }
+      }
+    }
+    
+  }
+  
+  df$infected[df$infected == 2] = 1
+  df = update_time_infected_co(df, infection_length, use)
+  
+  return(df)
+  
+  
+}
+
+update_time_infected_co <- function(df, infection_length, use){
+  
+  if (use == FALSE){
+    return(df)
+  }
+  
+  for (i in 1:length(df$x_coord)){
+    if (df$infected[i] == 1 && df$time_infected[i] == infection_length){
+      df$infected[i] = 0
+      df$time_not_infected[i] = -60
+    }
+    if (df$infected[i] == 1){
+      df$time_infected[i] = df$time_infected[i] + 1
+    }
+    
+  }
+  
+  return(df)
+}
+
+
+
+infection <- function(prob_infected = 0.47){
+  
+  if(rbinom(1,1,prob_infected) == 1){
+    return(2)
+  }
+  return(0)
+  
+  
+}
+
+
+run_co <- function(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 1000, GRID = 100, use = TRUE, p){ # Use is to have people recover from infections or not, p = plot infections over time or plot final infected people
+  df = init_df(STARTING_POPULATION, GRID)
+  num_infections = rep(NA, SIMULATION_ITERATIONS)
+  
+  for (sim_loop in 1:SIMULATION_ITERATIONS){
+    df = update_location(df, STARTING_POPULATION, GRID)
+    df = check_infected_co(df, infection_length = 8, prob_infected = 0.47, use)
+    num_infections[sim_loop] = sum(df$infected)
+  }
+  
+  if (use == FALSE){
+    if (p == FALSE){
+        tit = paste("Random Walk of COVID-19 infection spread (", SIMULATION_ITERATIONS,  " days)")
+        a = ggplot(df,aes(x=x_coord,y=y_coord,group=infected))+
+          geom_point(aes(color=as.factor(infected)))+
+          labs(title = tit, x = "X Coordinate", y = "Y Coordinate", color = "Infected")
+        }
+    if (p == TRUE){
+    tit = paste("Random Walk of COVID-19 infection spread (", SIMULATION_ITERATIONS,  " days)")
+    newdf = as.data.frame(num_infections)
+    a = ggplot(newdf,aes(x=1:length(num_infections),y = num_infections))+
+      geom_line()+
+      geom_point()+
+      labs(title = tit, x = "Days", y = "Number Infections", color = "Infected")
+    }
+    
+  }
+  
+  if (use == TRUE){
+    tit = paste("Random Walk of COVID-19 infection spread (", SIMULATION_ITERATIONS,  " days)")
+    newdf = as.data.frame(num_infections)
+    a = ggplot(newdf,aes(x=1:length(num_infections),y = num_infections))+
+      geom_line()+
+      geom_point()+
+      labs(title = tit, x = "Days", y = "Number Infections", color = "Infected")
+    
+  }
+
+  
+  print(a)
+
+  
+  return(num_infections)
+
+}
+
+
+
+ no_recover = run_co(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 75, GRID = 0.8, use = FALSE, p = TRUE)
+ set.seed(400)
+ recover = run_co(STARTING_POPULATION = 1000, SIMULATION_ITERATIONS = 75, GRID = 0.8, use = TRUE, p = TRUE)
+ codf = as.data.frame(no_recover)
+ codf$recover = recover
+ plot_both(codf)
+```
 
 
 
