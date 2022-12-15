@@ -1,24 +1,46 @@
 ---
-title: "Paper"
-author: "Isabelle Munsell"
+title: "Replicating and Improving a Random Covid-19 Walk"
+author: "Isabelle Munsell, Thomas Harris, Sophie Giacobbe"
 date: '2022-12-01'
-output: pdf_document
+output: 
+  pdf_document:
+    toc: yes
+    toc_depth: 2
+    number_sections: yes
+    df_print: paged
+    fig_caption: yes
+    highlight: tango
+  html_document:
+    toc: yes
+    toc_depth: '2'
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Introduction
 
-Motivation:
+# Motivation:
 
-Methodology:
+  A few short years ago the Covid-19 epidemic broke out--infecting and killing millions of people. This devastating virus has continued to persist among our societies in the form of other variants such as Alpha, Beta. Delta, Gamma, and Omnicron. Since the onset, there have been several variants that differ in the level of contagiousness. This level of contagiousness is known as $R_0$, the number of secondary infections that result from one infected person. For instance, in the early stages of Covid-19, scientists estimated the $R_0$ value to be between 2.24 and 3.58, which means that for every one person infected, 2.24 to 3.58 people were infected from them. This is a way for scientists to measure the spread of the virus in a universal value. Not only can this value tell us about how contagious a disease is, but it can also tell us if a disease is likely to cause an epidemic or not. In fact, for a disease to become an epidemic, the $R_0$ value has to be greater than 1. Given that previous studies have explored the spread and level of contagiousness at the onset of Covid-19, is it important to get a better understanding of Covid-19 in 2022 and what that might look like.   
 
-Results:
+## Methodology:
 
-Results:
 
-Conclusion:
 
-References:
+## Results:
+
+
+
+## Results:
+
+
+
+## Conclusion:
+
+
+
+## References:
+
