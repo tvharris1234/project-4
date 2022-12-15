@@ -24,7 +24,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Motivation:
 
-  A few short years ago the Covid-19 epidemic broke out--infecting and killing millions of people. This devastating virus has continued to persist among our societies in the form of other variants such as Alpha, Beta. Delta, Gamma, and Omnicron. Since the onset, there have been several variants that differ in the level of contagiousness. This level of contagiousness is known as $R_0$, the number of secondary infections that result from one infected person. For instance, in the early stages of Covid-19, scientists estimated the $R_0$ value to be between 2.24 and 3.58, which means that for every one person infected, 2.24 to 3.58 people were infected from them. This is a way for scientists to measure the spread of the virus in a universal value. Not only can this value tell us about how contagious a disease is, but it can also tell us if a disease is likely to cause an epidemic or not. In fact, for a disease to become an epidemic, the $R_0$ value has to be greater than 1. Given that previous studies have explored the spread and level of contagiousness at the onset of Covid-19, is it important to get a better understanding of Covid-19 in 2022 and what that might look like.   
+  A few short years ago the Covid-19 epidemic broke out--infecting and killing millions of people. This devastating virus has continued to persist among our societies in the form of other variants such as Alpha, Beta. Delta, Gamma, and Omnicron. Since the onset, there have been several variants that differ in the level of contagiousness. This level of contagiousness is known as $R_0$, the number of secondary infections that result from one infected person. For instance, in the early stages of Covid-19, scientists estimated the $R_0$ value to be between 2.24 and 3.58, which means that for every one person infected, 2.24 to 3.58 people were infected from them. This is a way for scientists to measure the spread of the virus in a universal value. Not only can this value tell us about how contagious a disease is, but it can also tell us if a disease is likely to cause an epidemic or not. In fact, for a disease to become an epidemic, the $R_0$ value has to be greater than 1. Given that previous studies have explored the spread and level of contagiousness at the onset of Covid-19, is it important to get a better understanding of Covid-19 in 2022 and what that might look like with data from places like New York and Colorado.   
+  
+# About the Study
+
+  
 
 ## Methodology:
 
@@ -43,4 +47,16 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ## References:
+
+Buchwald, Andrea G., et al. Estimating the Impact of Statewide Policies to Reduce Spread of Severe     Acute Respiratory Syndrome Coronavirus 2 in Real Time, Colorado, USA - Volume 27, Number     
+  9—September 2021 - Emerging Infectious Diseases Journal - CDC. wwwnc.cdc.gov,     
+  https://doi.org/10.3201/eid2709.204167. Accessed 14 Dec. 2022.
+CFpaper/Params Curve Fitting Scenarios.Csv at Main · Agb85/CFpaper. 
+  https://github.com/agb85/CFpaper/blob/main/params%20curve%20fitting%20scenarios.csv. Accessed 14     Dec. 2022.
+Sheikhi, Farnaz, et al. “Estimation of the Basic Reproduction Number of Alpha and Delta Variants of 
+  COVID-19 Pandemic in Iran.” PloS One, vol. 17, no. 5, 2022, p. e0265489. PubMed,             
+  https://doi.org/10.1371/journal.pone.0265489.
+Triambak, S., and D. P. Mahapatra. “A Random Walk Monte Carlo Simulation Study of COVID-19-like 
+  Infection Spread.” Physica A: Statistical Mechanics and Its Applications, vol. 574, July 2021, p. 
+  126014. ScienceDirect, https://doi.org/10.1016/j.physa.2021.126014.
 
